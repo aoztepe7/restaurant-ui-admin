@@ -1,3 +1,112 @@
-<p>
-  user works!
-</p>
+<!-- Container fluid  -->
+<div class="container-fluid">
+  <!-- Start Page Content -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-title">
+          <h3><b>Users </b></h3>
+        </div>
+        <div class="card-body">
+
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+              <tr>
+                <th><b>First Name</b></th>
+                <th><b>Last Name</b></th>
+                <th><b>Mail</b></th>
+                <th><b>Role</b></th>
+                <th><b>Actions</b></th>
+              </tr>
+              </thead>
+              <tbody>
+
+              <tr *ngFor="let user of userList?.content">
+                <td><strong style="color: #6c757d ">{{user.firstName}}</strong></td>
+                <td><strong style="color: #6c757d ">{{user.lastName}}</strong></td>
+                <td><strong style="color: #6c757d ">{{user.mail}}</strong></td>
+                <td><strong style="color: #6c757d ">{{user.role}}</strong></td>
+                <td>
+                  <button type="button" (click)="editUser(userEditModal,user.id)" class="btn btn-success m-b-10 m-l-5">
+                    Edit
+                  </button>
+                  <button type="button" (click)="deleteUser(user.id)" class="btn btn-success m-b-10 m-l-5">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <div class="row">
+            <div class="col-7">
+              Total {{userList?.numberOfElements}}
+            </div>
+            <div class="col-5">
+              <div class="btn-group float-right">
+                <button *ngIf="!userList?.first" (click)="prevPage()" class="btn btn-gradient waves-effect"
+                        type="button"><i class="fa fa-chevron-left"></i></button>
+                <button *ngIf="!userList?.last" (click)="nextPage()" class="btn btn-gradient waves-effect"
+                        type="button"><i class="fa fa-chevron-right"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #userEditModal>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Edit User</h4>
+  </div>
+  <div class="modal-body">
+    <form (submit)="saveUser()" method="post">
+      <input type="hidden" name="id" [(ngModel)]="userForm.id">
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert" [ngClass]="FadeOutLink()" *ngIf="alert.message.length > 0">
+          {{alert.message}}
+        </div>
+        <div class="basic-form">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" name="firstName" class="form-control" autocomplete="off"
+                   [(ngModel)]="userForm.firstName">
+
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" name="lastName" class="form-control" autocomplete="off"
+                   [(ngModel)]="userForm.lastName">
+
+          </div>
+          <div class="form-group">
+            <label>Mail</label>
+            <input type="text" name="mail" class="form-control" autocomplete="off"
+                   [(ngModel)]="userForm.mail">
+
+          </div>
+          <div class="form-group">
+            <label>Role</label>
+            <select class="form-control" [(ngModel)]="userForm.role" name="role">
+              <option value="USER">USER</option>
+              <option value="ADMIN">ADMIN</option>
+              <option value="OWNER">OWNER</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" (click)="modalRef.hide()" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>

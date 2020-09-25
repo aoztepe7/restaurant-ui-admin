@@ -1,20 +1,21 @@
-export class Restaurant {
+export class User {
   constructor(public uuid: string,
-              public name: string,
-              public owner: string,
-              public rate: number) {
+              public firstName: string,
+              public lastName: string,
+              public mail: string,
+              public role: string) {
   }
 }
 
-export class RestaurantList {
+export class UserList {
   constructor(public code: number,
               public message: string,
-              public restaurants: Pagination) {
+              public users: Pagination) {
   }
 }
 
 export class Pagination {
-  constructor(public content: Array<Restaurant>,
+  constructor(public content: Array<User>,
               public first: boolean,
               public last: boolean,
               public number: number,

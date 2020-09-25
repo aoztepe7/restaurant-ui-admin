@@ -1,3 +1,254 @@
-<p>
-  restaurant works!
-</p>
+<!-- Container fluid  -->
+<div class="container-fluid">
+  <!-- Start Page Content -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-title">
+          <h3><b>Restaurants </b></h3>
+        </div>
+        <div class="card-body">
+
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+              <tr>
+                <th><b>Name</b></th>
+                <th><b>Overall</b></th>
+                <th><b>Owner Name</b></th>
+                <th><b>Actions</b></th>
+              </tr>
+              </thead>
+              <tbody>
+
+              <tr *ngFor="let restaurant of restaurantList?.content">
+                <td><strong style="color: #6c757d ">{{restaurant.name}}</strong></td>
+                <td><strong style="color: #6c757d ">{{restaurant.rate}}</strong></td>
+                <td><strong style="color: #6c757d ">{{restaurant.owner.firstName}} {{restaurant.owner.lastName}}</strong></td>
+                <td>
+                  <button type="button" (click)="editRestaurant(restaurantEditModal,restaurant.id)" class="btn btn-success m-b-10 m-l-5">
+                    Edit
+                  </button>
+                  <button type="button" (click)="openReviewPage(reviewModal,restaurant.id,restaurant.name)" class="btn btn-success m-b-10 m-l-5">
+                    Reviews
+                  </button>
+                  <button type="button" (click)="deleteRestaurant(restaurant.id)" class="btn btn-success m-b-10 m-l-5">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <div class="row">
+            <div class="col-7">
+              Total {{restaurantList?.numberOfElements}}
+            </div>
+            <div class="col-5">
+              <div class="btn-group float-right">
+                <button *ngIf="!restaurantList?.first" (click)="prevPage()" class="btn btn-gradient waves-effect"
+                        type="button"><i class="fa fa-chevron-left"></i></button>
+                <button *ngIf="!restaurantList?.last" (click)="nextPage()" class="btn btn-gradient waves-effect"
+                        type="button"><i class="fa fa-chevron-right"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #restaurantEditModal>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Edit Restaurant</h4>
+  </div>
+  <div class="modal-body">
+    <form (submit)="saveRestaurant()" method="post">
+      <input type="hidden" name="id" [(ngModel)]="restaurantForm.id">
+        <div class="modal-body">
+        <div class="alert alert-danger" role="alert" [ngClass]="FadeOutLink()" *ngIf="alert.message.length > 0">
+          {{alert.message}}
+        </div>
+        <div class="basic-form">
+          <div class="form-group">
+            <label>Restaurant Name</label>
+            <input type="text" name="name" class="form-control" autocomplete="off"
+                   [(ngModel)]="restaurantForm.name">
+
+          </div>
+          <div class="form-group">
+            <label>Owner</label>
+            <select name="userId" class="form-control" [(ngModel)]="restaurantForm.userId">
+              <option *ngFor="let owner of userList?.content" value="{{owner.id}}">{{owner.firstName}} {{owner.lastName}}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" (click)="modalRef.hide()" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+
+<ng-template #reviewModal>
+  <div class="modal-header">
+    <h4 class="modal-title" style="margin: 0 auto;">Reviews for {{restaurantName}}</h4>
+  </div>
+  <div class="modal-body">
+    <div class="alert alert-success" [ngClass]="FadeOutLink()"  role="alert" *ngIf="success.message.length > 0">
+      {{success.message}}
+    </div>
+    <div class="table-responsive">
+
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+          <th><b>Visit Date</b></th>
+          <th><b>Comment</b></th>
+          <th><b>Rate</b></th>
+          <th><b>Visitor Name-Surname</b></th>
+          <th><b>Actions</b></th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr *ngFor="let review of reviewList?.content">
+          <td><strong style="color: #6c757d ">{{review.visitDate}}</strong></td>
+          <td><strong style="color: #6c757d ">{{review.comment}}</strong></td>
+          <td><strong style="color: #6c757d ">{{review.rate}}</strong></td>
+          <td><strong style="color: #6c757d ">{{review.user.firstName}} {{review.user.lastName}}</strong></td>
+          <td>
+            <button type="button" (click)="editReview(reviewEditModal,review.id)" class="btn btn-warning m-b-10 m-l-5">
+              Edit
+            </button>
+            <button *ngIf="review.answerRequired === false" type="button" (click)="showAnswer(answerModal,review.id)" class="btn btn-warning m-b-10 m-l-5">
+              Show Answer
+            </button>
+          </td>
+        </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <div class="row">
+      <div class="col-7">
+        Total {{reviewList?.numberOfElements}}
+      </div>
+      <div class="col-5">
+        <div class="btn-group float-right">
+          <button *ngIf="!reviewList?.first" (click)="prevPageReview()" class="btn btn-gradient waves-effect"
+                  type="button"><i class="fa fa-chevron-left"></i></button>
+          <button *ngIf="!reviewList?.last" (click)="nextPageReview()" class="btn btn-gradient waves-effect"
+                  type="button"><i class="fa fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" (click)="modalService._hideModal(1)" class="btn btn-secondary" data-dismiss="modal">
+      Close
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #reviewEditModal>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Edit Review</h4>
+  </div>
+  <div class="modal-body">
+    <form (submit)="saveReview()" method="post">
+      <input type="hidden" name="id" [(ngModel)]="reviewForm.id">
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert" [ngClass]="FadeOutLink()" *ngIf="alert.message.length > 0">
+          {{alert.message}}
+        </div>
+        <div class="basic-form">
+          <div class="form-group">
+            <label>Restaurant</label>
+            <select name="restaurantId" class="form-control" [(ngModel)]="reviewForm.restaurantId">
+              <option *ngFor="let restaurant of restaurantList?.content" value="{{restaurant.id}}">{{restaurant.name}}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Visitor</label>
+            <select name="userId" class="form-control" [(ngModel)]="reviewForm.userId">
+              <option *ngFor="let user of standardUserList?.content" value="{{user.id}}">{{user.firstName}} {{user.lastName}}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Visit Date</label>
+            <input type="text" name="visitDate" class="form-control" autocomplete="off" mask="00-00-0000"
+                   [(ngModel)]="reviewForm.visitDate">
+
+          </div>
+          <div class="form-group">
+            <label>Comment</label>
+            <input type="text" name="comment" class="form-control" autocomplete="off"
+                   [(ngModel)]="reviewForm.comment">
+
+          </div>
+          <div class="form-group">
+            <label>Rate</label>
+            <select class="form-control" [(ngModel)]="reviewForm.rate" name="rate">
+              <option value=""> Select Rate </option>
+              <option value="5">5</option>
+              <option value="4">4</option>
+              <option value="3">3</option>
+              <option value="2">2</option>
+              <option value="1">1</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" (click)="modalRef.hide()" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<ng-template #answerModal>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Restaurant Answer</h4>
+  </div>
+  <div class="modal-body">
+    <form (submit)="saveAnswer()" method="post">
+      <input type="hidden" name="id" [(ngModel)]="answerForm.id">
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert" [ngClass]="FadeOutLink()" *ngIf="alert.message.length > 0">
+          {{alert.message}}
+        </div>
+        <div class="basic-form">
+          <div class="form-group">
+            <label>Restaurant Answer</label>
+            <input type="text" name="ownerAnswer" class="form-control" autocomplete="off"
+                   [(ngModel)]="answerForm.ownerAnswer">
+
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="submit" (click)="deleteAnswer(answerForm.id)" class="btn btn-primary">Delete</button>
+        <button type="button" (click)="modalRef.hide()" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
